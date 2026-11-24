@@ -136,17 +136,4 @@ Los sensores se registran **solo al activar la protección**. El acelerómetro e
 
 `DetectionEngineTest.kt` comprueba armado, extracción, arrebato, sacudidas y movimientos ordinarios. `ProtectionConfigTest.kt` comprueba los números peruanos. La prueba instrumentada `SimulationSensorsTest.kt` inicia el servicio en un modo interno que evita llamadas y confirma que las lecturas empiezan y se detienen; ese modo no aparece en la interfaz. Una prueba en emulador no confirma que una llamada real se conecte ni calibra los umbrales para un teléfono físico.
 
-## Preguntas que conviene saber responder
-
-- **¿Por qué tres sensores?** Proximidad y luz dan contexto de bolsillo; el acelerómetro confirma movimiento. Para el SOS y el arrebato en mano basta el acelerómetro.
-- **¿El acelerómetro detecta robos?** No. Mide aceleración; el algoritmo interpreta patrones y puede equivocarse.
-- **¿Por qué se resta la gravedad?** Para que la lectura de aproximadamente 9,8 m/s² que produce estar quieto no se confunda con una sacudida.
-- **¿Por qué se usa `elapsedRealtime()`?** Las ventanas de 1,8, 3 y 7 segundos deben depender de tiempo transcurrido, no de cambios en la hora del reloj.
-- **¿Por qué no se registran los sensores al abrir la app?** Solo son necesarios durante la protección; mantener listeners sin uso consume recursos.
-- **¿Qué pasa sin luz o proximidad?** No puede confirmarse el bolsillo, pero permanecen el SOS y el posible arrebato por movimiento.
-- **¿Cuándo suena?** En `triggerAlert()`, justo después de que `DetectionEngine` devuelve un disparo. `startSiren()` reproduce la alarma y vibra; `sendAlert()` la detiene antes de solicitar la llamada.
-- **¿Por qué la notificación no tiene sonido propio?** Para evitar duplicar la alarma que reproduce `MediaPlayer`.
-- **¿La app garantiza que el contacto recibe ayuda?** No. `placeCall()` solicita la llamada al sistema; la conexión depende del teléfono, la SIM y la red. La app tampoco comprueba si contestaron.
-- **¿Qué protege el PIN?** Evita una cancelación casual desde la interfaz. Es un PIN corto y local; no debe presentarse como protección criptográfica absoluta.
-
 Referencias de Android: [sensores y ciclo de vida](https://developer.android.com/develop/sensors-and-location/sensors/sensors_overview), [servicios en primer plano](https://developer.android.com/develop/background-work/services/fgs), [llamadas con `TelecomManager`](https://developer.android.com/reference/android/telecom/TelecomManager#placeCall(android.net.Uri,android.os.Bundle)).
